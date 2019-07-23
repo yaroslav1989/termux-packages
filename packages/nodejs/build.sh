@@ -1,10 +1,9 @@
 TERMUX_PKG_HOMEPAGE=https://nodejs.org/
 TERMUX_PKG_DESCRIPTION="Platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications"
 TERMUX_PKG_LICENSE="MIT"
-TERMUX_PKG_VERSION=12.4.0
-TERMUX_PKG_REVISION=1
+TERMUX_PKG_VERSION=12.7.0
 TERMUX_PKG_SRCURL=https://nodejs.org/dist/v${TERMUX_PKG_VERSION}/node-v${TERMUX_PKG_VERSION}.tar.xz
-TERMUX_PKG_SHA256=20b52366d3502c60d4aec0bd5052c841a94bf1cd5d74b2ea1e498c1a2ada8ce3
+TERMUX_PKG_SHA256=2d9aa598a46fee980d281aab14143a6dfdfd3c7b4c5b582538bb8a7be401ffd0
 # Note that we do not use a shared libuv to avoid an issue with the Android
 # linker, which does not use symbols of linked shared libraries when resolving
 # symbols on dlopen(). See https://github.com/termux/termux-packages/issues/462.
@@ -48,4 +47,9 @@ termux_step_configure() {
 	perl -p -i -e 's/LIBS := \$\(LIBS\)/LIBS := -lpthread/' \
 		$TERMUX_PKG_SRCDIR/out/tools/v8_gypfiles/torque.host.mk \
 		$TERMUX_PKG_SRCDIR/out/tools/v8_gypfiles/bytecode_builtins_list_generator.host.mk
+
+	# Fix linking of host utility 'mksnapshot'.
+	#sed -i -e 's@-L/data/data/com.termux/files/usr/lib@@g' \
+	#	-e 's@-licudata@-licudata -lpthread@g' \
+	#	$TERMUX_PKG_SRCDIR/out/tools/v8_gypfiles/mksnapshot.host.mk
 }
